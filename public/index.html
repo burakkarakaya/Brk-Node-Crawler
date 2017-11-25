@@ -23,7 +23,17 @@
         <option value="toyota">Toyota</option>
         <option value="bmw">Bmw</option>
         <option value="peugeot">Peugeot</option>
+        <option value="nissan">Nissan</option>
         <option value="mercedes">Mercedes</option>
+        <option value="audi">Audi</option>
+        <option value="hyundai">Hyundai</option>
+        <option value="seat">Seat</option>
+        <option value="honda">Honda</option>
+        <option value="kia">Kia</option>
+        <option value="dacia">Dacia</option>
+        <option value="volvo">Volvo</option>
+        <option value="jeep">Jeep</option>
+        <option value="suzuki">suzuki</option>
     </select>
 
     <noscript style="display: none;"></noscript>
@@ -41,13 +51,16 @@
                 cleanAttr: function( k ){
                     return k.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/ig, '<$1>');
                 },
+                clearTag: function( k ){
+                   return k.replace(/<[^>]+>/gm, '');
+                },
                 detectEl: function (ID) {
                     return ID.length > 0 ? true : false;
                 },
                 setURI: function( o ){
                     o = o || {};
                     var _t = this, prefix = o['prefix'], uri = o['uri'] || '';
-                    if( uri != '' && uri.indexOf( prefix ) == -1 && uri.indexOf('http://') == -1 && uri.indexOf('https://') == -1 ){
+                    if( uri != '' && uri.indexOf( prefix ) == -1 && uri.indexOf('http://') == -1 && uri.indexOf('https://') == -1 && uri.indexOf('//') == -1 ){
                         if( uri.substr( 0, 1 ) == '/')
                             uri = uri.substr(1, uri.length);
                         uri = prefix + uri;
@@ -80,14 +93,31 @@
                                 callback({ type: 'error' });
                         },
                         timeout: 30000,
+                        xhr: function(){
+                            var xhr = new window.XMLHttpRequest();
+                            //Upload progress
+                            xhr.upload.addEventListener("progress", function(evt){
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                //Do something with upload progress
+                                console.log(percentComplete);
+                            }
+                            }, false);
+                            //Download progress
+                            xhr.addEventListener("progress", function(evt){
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                //Do something with download progress
+                                console.log(percentComplete);
+                            }
+                            }, false);
+                            return xhr;
+                        },
                         success: function (d) {
                             if (typeof callback !== 'undefined')
                                 callback({ type: 'success', val: d });
                         }
                     });
-                },
-                clearCSS: function( k ){
-                    return k.replace(/<link\b[^>]*?>/gi, '');
                 },
                 clearScriptTag: function( k ){
                     var SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
@@ -97,7 +127,7 @@
                 }
             },
             crawler = {
-                el: { select: 'select' },
+                el: { select: 'select', content: 'noscript' },
                 uri: '/api/?uri={{uri}}',
                 getURI: function (o) {
                     o = o || {};
@@ -106,44 +136,55 @@
                 },
                 getConfig: function (o) {
                     console.clear();
+
                     o = o || {};
-                    var _t = this, typ = o['typ'] || '', obj = CONFIG[typ] || {};
+                    var _t = this, typ = o['typ'] || '', obj = CONFIG[typ] || {}, setJSON = obj['setJSON'] || '';
+
                     uty.ajx({ uri: _t.getURI({ uri: obj['prefix'] + obj['uri'] }) }, function (d) {
                         if (d['type'] == 'success') {
-                            $('noscript').html( uty.clearCSS( uty.clearScriptTag( d['val'] || '' ) ) );
-                            d = $('noscript').html() || '';
-                            
-                            var func = obj['func'] || ''; 
-                            if( func != '' )
-                                d = func( d );
-    
-                            var arr = [];
+                            d = d['val'] || '';
 
-                            $('<div>' + d + '</div>')
-                            .find( obj['el']['items'] )
-                            .each(function(){
-                                var ths = $( this ), img = obj['el']['img'];
+                            var arr = [], content = $( _t.el.content );
+
+                            if( setJSON != '' )
+                                arr = setJSON({ data: d, prefix: obj['prefix'] });
                                 
-                                if( typeof img == 'object' ){
-                                    var cf = img['customFunc'] || '';
-                                    img = ths.find( img['el'] ).attr( img['attr'] ) || ''; 
-                                    if( cf != '' )
-                                        img = cf( img );    
-                                }else
-                                    img = ths.find( obj['el']['img'] ).attr('src') || '';
+                            else{
 
-                                  
-                                var b = { 
-                                    title: uty.getText( ths.find( obj['el']['title'] ) ), 
-                                    dsc: uty.getText( ths.find( obj['el']['dsc'] ) ), 
-                                    date: uty.getText( ths.find( obj['el']['date'] ) ), 
-                                    img: uty.trimText( uty.setURI({ uri: img, prefix: obj['prefix'] }) ), 
-                                    lnk: uty.trimText( uty.setURI({ uri: obj['el']['lnk'] == 'self' ? ( ths.attr('href') || '' ) : ( ths.find( obj['el']['lnk'] ).attr('href') || '' ), prefix: obj['prefix'] }) )
-                                }; 
+                                content.html( uty.clearScriptTag( d ) );
+                                content.find('link[rel=stylesheet]').remove();
+                                d = content.html() || '';
+                                
+                                var func = obj['func'] || ''; 
+                                if( func != '' )
+                                    d = func( d );
 
-                                if( uty.detectObj( b ) )
-                                    arr.push( b );
-                            });
+                                $('<div>' + d + '</div>')
+                                .find( obj['el']['items'] )
+                                .each(function(){
+                                    var ths = $( this ), img = obj['el']['img'];
+                                    
+                                    if( typeof img == 'object' ){
+                                        var cf = img['customFunc'] || '';
+                                        img = ths.find( img['el'] ).attr( img['attr'] ) || ''; 
+                                        if( cf != '' )
+                                            img = cf( img );    
+                                    }else
+                                        img = ths.find( obj['el']['img'] ).attr('src') || '';
+
+                                    var b = { 
+                                        title: uty.getText( ths.find( obj['el']['title'] ) ), 
+                                        dsc: uty.getText( ths.find( obj['el']['dsc'] ) ), 
+                                        date: uty.getText( ths.find( obj['el']['date'] ) ), 
+                                        img: uty.trimText( uty.setURI({ uri: img, prefix: obj['prefix'] }) ), 
+                                        lnk: uty.trimText( uty.setURI({ uri: obj['el']['lnk'] == 'self' ? ( ths.attr('href') || '' ) : ( ths.find( obj['el']['lnk'] ).attr('href') || '' ), prefix: obj['prefix'] }) )
+                                    }; 
+
+                                    if( uty.detectObj( b ) )
+                                        arr.push( b );
+                                });
+
+                            }
 
                             console.log( arr );
                         }
