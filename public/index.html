@@ -22,12 +22,11 @@
         <option value="opel">Opel</option>
         <option value="toyota">Toyota</option>
         <option value="bmw">Bmw</option>
+        <option value="peugeot">Peugeot</option>
         <option value="mercedes">Mercedes</option>
     </select>
 
-    <noscript>
-
-    </noscript>
+    <noscript style="display: none;"></noscript>
    
    
    <script>
@@ -54,6 +53,10 @@
                         uri = prefix + uri;
                     }
                     return uri;
+                },
+                getText: function( ID ){
+                    var _t = this, k = ID.map(function(){ return _t.trimText( $( this ).text() || '' ); }).get().join(' ') || '';
+                    return k;
                 },
                 detectObj: function( o ){
                     var b = false;
@@ -83,6 +86,9 @@
                         }
                     });
                 },
+                clearCSS: function( k ){
+                    return k.replace(/<link\b[^>]*?>/gi, '');
+                },
                 clearScriptTag: function( k ){
                     var SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
                     while( SCRIPT_REGEX.test( k ) )
@@ -104,7 +110,7 @@
                     var _t = this, typ = o['typ'] || '', obj = CONFIG[typ] || {};
                     uty.ajx({ uri: _t.getURI({ uri: obj['prefix'] + obj['uri'] }) }, function (d) {
                         if (d['type'] == 'success') {
-                            $('noscript').html( uty.clearScriptTag( d['val'] || '' ) );
+                            $('noscript').html( uty.clearCSS( uty.clearScriptTag( d['val'] || '' ) ) );
                             d = $('noscript').html() || '';
                             
                             var func = obj['func'] || ''; 
@@ -128,9 +134,9 @@
 
                                   
                                 var b = { 
-                                    title: uty.trimText( ths.find( obj['el']['title'] ).text() || '' ), 
-                                    dsc: uty.trimText( ths.find( obj['el']['dsc'] ).text() || '' ), 
-                                    date: uty.trimText( ths.find( obj['el']['date'] ).text() || '' ), 
+                                    title: uty.getText( ths.find( obj['el']['title'] ) ), 
+                                    dsc: uty.getText( ths.find( obj['el']['dsc'] ) ), 
+                                    date: uty.getText( ths.find( obj['el']['date'] ) ), 
                                     img: uty.trimText( uty.setURI({ uri: img, prefix: obj['prefix'] }) ), 
                                     lnk: uty.trimText( uty.setURI({ uri: obj['el']['lnk'] == 'self' ? ( ths.attr('href') || '' ) : ( ths.find( obj['el']['lnk'] ).attr('href') || '' ), prefix: obj['prefix'] }) )
                                 }; 
