@@ -9,7 +9,7 @@ var CONFIG = {
     renault: {
         prefix: 'https://www.renault.com.tr/',
         uri: 'kampanyalar.html',
-        el: { items: '.freeEditorial .grid-row', title: '.heading-group span', dsc: '.heliostext p', date: '', img: '.picture-element img', lnk: '.cta-list a' }
+        el: { items: '.freeEditorial .grid-row', title: '.heading-group span', dsc: '.heliostext p', date: '', img: { el: '.picture-element  span:eq(0)', attr: 'data-src' }, lnk: '.cta-list a' }
     },
 
     ford: {
@@ -131,5 +131,25 @@ var CONFIG = {
     }
 
 };
+
+var CONFIGPRICE = {
+    vw: {
+        prefix: 'https://binekarac.vw.com.tr/',
+        uri: '2017-tum-modeller-fiyat-listesi.aspx',
+        el: { items: '.table tr', title: 'td.col1, td.col2', price1: '[data-title="FİYAT"]', price2: '[data-title="FİYAT TL"]' }
+    },
+    hyundai: {
+        prefix: 'http://www.hyundai.com/',
+        uri: 'tr/tr/Shopping/Pricelist/index.html',
+        el: { items: 'table tr', title: 'td:eq(0), td:eq(1)', price1: 'td:eq(2)', price2: 'td:eq(3)' }
+    },
+    citroen: {
+        prefix: 'http://lokal.citroen.com.tr/',
+        uri: 'FiyatListesi/citroen',
+        el: { items: '.modelRowValues', title: '> span:eq(0), > span:eq(1), > span:eq(2), > span:eq(3)', price1: '> span:eq(5)', price2: '> span:eq(6)' }
+    }
+};
+
+
 
 
