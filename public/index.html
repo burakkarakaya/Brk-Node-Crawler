@@ -7,38 +7,40 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="/js/jquery-base.min.js"></script>
     <script type="text/javascript" src="/js/config.js"></script>
 </head>
 
 <body>
-    <ul>
-        <li>
-            <span>Kampanyalar</span>
-            <select class="select-campaing">
-                <option value="-1">Marka Seçiniz</option>
-                <option value="vw">Volkswagen</option>
-                <option value="renault">Renault</option>
-                <option value="ford">Ford</option>
-                <option value="fiat">Fiat</option>
-                <option value="opel">Opel</option>
-                <option value="toyota">Toyota</option>
-                <option value="bmw">Bmw</option>
-                <option value="peugeot">Peugeot</option>
-                <option value="nissan">Nissan</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
-                <option value="hyundai">Hyundai</option>
-                <option value="seat">Seat</option>
-                <option value="honda">Honda</option>
-                <option value="kia">Kia</option>
-                <option value="dacia">Dacia</option>
-                <option value="volvo">Volvo</option>
-                <option value="jeep">Jeep</option>
-                <option value="suzuki">suzuki</option>
-            </select>
-        </li>
-        <li>
+    <div class="container">
+        <ul>
+            <li>
+                <span>Kampanyalar</span>
+                <select class="select-campaing">
+                    <option value="-1">Marka Seçiniz</option>
+                    <option value="vw">Volkswagen</option>
+                    <option value="renault">Renault</option>
+                    <option value="ford">Ford</option>
+                    <option value="fiat">Fiat</option>
+                    <option value="opel">Opel</option>
+                    <option value="toyota">Toyota</option>
+                    <option value="bmw">Bmw</option>
+                    <option value="peugeot">Peugeot</option>
+                    <option value="nissan">Nissan</option>
+                    <option value="mercedes">Mercedes</option>
+                    <option value="audi">Audi</option>
+                    <option value="hyundai">Hyundai</option>
+                    <option value="seat">Seat</option>
+                    <option value="honda">Honda</option>
+                    <option value="kia">Kia</option>
+                    <option value="dacia">Dacia</option>
+                    <option value="volvo">Volvo</option>
+                    <option value="jeep">Jeep</option>
+                    <option value="suzuki">suzuki</option>
+                </select>
+            </li>
+            <li>
                 <span>Fiyatlar</span>
                 <select class="select-price">
                     <option value="-1">Marka Seçiniz</option>
@@ -47,8 +49,17 @@
                     <option value="citroen">Citroen</option>
                 </select>
             </li>
-    </ul>
-    
+        </ul>
+
+
+        <div class="dynamicInputs">
+
+
+
+        </div>
+
+
+    </div>
 
     <noscript style="display: none;"></noscript>
 
@@ -140,8 +151,12 @@
                 }
             },
             crawler = {
-                el: { selectCampaing: '.select-campaing', selectPrice: '.select-price', content: 'noscript' },
+                el: { selectCampaing: '.select-campaing', selectPrice: '.select-price', content: 'noscript', dynamicContent: '.dynamicInputs' },
                 uri: '/api/?uri={{uri}}',
+                template: {
+                    row: '<div class="row">{{FIELD}}</div>',
+                    field: '<div rel="{{FIELD NAME}}" class="input-group"><span class="input-group-addon">{{FIELD NAME}}</span><input value="{{DATA}}" class="form-control" /></div>'
+                },
                 getURI: function (o) {
                     o = o || {};
                     var _t = this;
@@ -168,7 +183,7 @@
                                 content.find('link[rel=stylesheet]').remove();
                                 d = content.html() || '';
                                 content.html('');
-                                
+
                                 var func = obj['func'] || '';
                                 if (func != '')
                                     d = func(d);
@@ -177,10 +192,10 @@
                                     .find(obj['el']['items'])
                                     .each(function () {
 
-                                        var ths = $( this ), b = {};
-                                        
-                                        $.each(obj['el'], function( i, k ){
-                                            if( i == 'img' ){
+                                        var ths = $(this), b = {};
+
+                                        $.each(obj['el'], function (i, k) {
+                                            if (i == 'img') {
                                                 var img = '';
                                                 if (typeof k == 'object') {
                                                     var cf = k['customFunc'] || '';
@@ -188,14 +203,14 @@
                                                     if (cf != '')
                                                         img = cf(img);
                                                 } else
-                                                    img = ths.find( k ).attr('src') || '';
-                                                
-                                                b['img'] = uty.trimText(uty.setURI({ uri: img, prefix: obj['prefix'] }));    
-                                            }else if( i == 'lnk' )
+                                                    img = ths.find(k).attr('src') || '';
+
+                                                b['img'] = uty.trimText(uty.setURI({ uri: img, prefix: obj['prefix'] }));
+                                            } else if (i == 'lnk')
                                                 b['lnk'] = uty.trimText(uty.setURI({ uri: k == 'self' ? (ths.attr('href') || '') : (ths.find(k).attr('href') || ''), prefix: obj['prefix'] }));
-                                            else if( i == 'items' );
+                                            else if (i == 'items');
                                             else
-                                                b[ i ] = uty.getText(ths.find( k ));      
+                                                b[i] = uty.getText(ths.find(k));
                                         });
 
 
@@ -207,9 +222,23 @@
 
                             }
 
+                            _t.setTemplate({ data: arr, typ: typ });
                             console.log(arr);
                         }
                     });
+                },
+                getTemplate: function (o) {
+                    var _t = this, htm = $.map(o, function (i, k) { return _t.template['field'].replace(/{{FIELD NAME}}/g, k).replace(/{{DATA}}/g, i) }).join('');
+                    htm = _t.template['row'].replace(/{{FIELD}}/g, htm);
+                    return htm;
+                },
+                setTemplate: function (o) {
+                    var _t = this, data = o['data'], htm = '';
+                    $.each(data, function (i, k) {
+                        htm += _t.getTemplate(k);
+                    });
+                    $(_t.el.dynamicContent).html(htm);
+                    //console.log(htm);
                 },
                 addEvent: function () {
                     var _t = this;
@@ -224,7 +253,7 @@
                             }
 
                         });
-                    
+
                     $(_t.el.selectPrice)
                         .bind('change', function () {
                             var ths = $(this), val = ths.val() || -1;
