@@ -1,0 +1,54 @@
+var bdy = $('body'),
+    liveSearch = {
+        el: { input: '.search-input', target: '.table-striped tbody tr' },
+        cls: { hidden: 'ems-none', noResult: 'search-no-result' },
+        uty: {
+            detectEl: function (ID) { ID.length > 0 ? true : false; },
+            cleanText: function (k) { return k.replace(/\s+/g, ''); },
+            lowerCase: {
+                charMap: { Ç: 'c', Ö: 'o', Ş: 's', İ: 'i', I: 'i', Ü: 'u', Ğ: 'g', ç: 'c', ö: 'o', ş: 's', ı: 'i', ü: 'u', ğ: 'g' },
+                change: function (k) { return k.replace(/\s+/g, '').toLowerCase(); },
+                get: function (val) {
+                    var _t = this, str_array = val.split('');
+                    for (var i = 0, len = str_array.length; i < len; i++)
+                        str_array[i] = _t.charMap[str_array[i]] || str_array[i];
+                    val = str_array.join('');
+                    return _t.change(val);
+                }
+            }
+        },
+        addEvent: function () {
+            var _t = this, target = $(_t.el.target);
+            $(_t.el.input)
+                .bind('blur', function () {
+                    var ths = $(this);
+                })
+                .bind('keyup', function () {
+                    var ths = $(this), val = _t.uty.cleanText(ths.val()), count = 0;
+                    if (val.length > 0) {
+                        target.each(function () {
+                            var ts = $(this), contents = $('td', ts).map(function () { return $(this).text() }).get().join(' ');
+
+                            if (uty.lowerCase.get(contents).search(new RegExp(uty.lowerCase.get(val), 'i')) < 0)
+                                ts.addClass(_t.cls['hidden']);
+                            else {
+                                ts.removeClass(_t.cls['hidden']);
+                                count++;
+                            }
+                        });
+                        if (count == 0) bdy.addClass(_t.cls['noResult']);
+                        else bdy.removeClass(_t.cls['noResult']);
+                    } else {
+                        bdy.removeClass(_t.cls['noResult']);
+                        target.removeClass(_t.cls['hidden']);
+                    }
+                });
+
+        },
+        init: function () {
+            var _t = this;
+            if (_t.uty.detectEl($(_t.el.input)))
+                _t.addEvent();
+        },
+    };
+liveSearch.init();
