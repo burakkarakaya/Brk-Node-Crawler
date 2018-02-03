@@ -147,6 +147,129 @@ var CONFIGPRICE = {
         prefix: 'http://lokal.citroen.com.tr/',
         uri: 'FiyatListesi/citroen',
         el: { items: '.modelRowValues', title: '> span:eq(0), > span:eq(1), > span:eq(2), > span:eq(3)', price1: '> span:eq(5)', price2: '> span:eq(6)' }
+    },
+    mitsubishi: {
+        "prefix": "https://www.mitsubishi-motors.com.tr/",
+        "uri": "fiyatlar",
+        "el": {
+          "items": ".table_p .table-price-list",
+          "title": ".text-price span",
+          "price1": "> td:eq(1) td:eq(1)",
+          "price2": "> td:eq(1) td:eq(2)"
+        }
+      },
+
+      suzuki: {
+        "prefix": "http://otomobil.suzuki.com.tr/",
+        "uri": "fiyat-listesi-2017.aspx",
+        "el": { "items": "#table_fiyat_listesi tr", "title": "> td:eq(0), > td:eq(1), > td:eq(2), > td:eq(3), > td:eq(4)", "price1": "> td:eq(5)" }
+    },
+    
+    alfaRomeo: {
+        "prefix": "https://tofas.dpcmsys.com/",
+        "uri": "TofasPriceList/ALFAROMEO_FiyatListesi_2017.Html?opncl_performance=true&opncl_advertising=true",
+        "el": { "items": "table:eq(0) tr", "title": "> td:eq(0), > td:eq(1)", "price1": "> td:eq(2)", "price2": "> td:eq(3)" }
+    },
+    mini: {
+        "prefix": "https://www.borusanotomotiv.com/",
+        "uri": "mini/stage2/fiyatListesi/FiyatListesi.aspx",
+        "el": { "items": ".priceTable .pRow", "title": "> div:eq(0), > div:eq(1), > div:eq(2), > div:eq(3), > div:eq(4), > div:eq(5)", "price1": "> div:eq(7)" }
+    },
+    
+    
+    ds: {
+        "prefix": "http://lokal.citroen.com.tr/",
+        "uri": "FiyatListesi/ds?_ga=1.206574234.869682584.1457694803",
+        "el": { "items": ".modeldetail .modelRowValues", "title": "> :eq(0), > :eq(1), > :eq(2), > :eq(3)", "price1": "> :eq(5)" }
+    },
+    
+    kia: {
+        "prefix": "https://www.kia.com/",
+        "uri": "tr/satis-merkezi/fiyat-listesi.html",
+        "el": { "items": ".pricelist table tr", "title": "> :eq(0), > :eq(1), > :eq(2)", "price1": "> :eq(3)", "price2": "> :eq(5)" }
+    },
+    
+    hyundai: {
+        "prefix": "http://www.hyundai.com/",
+        "uri": "tr/tr/Shopping/Pricelist/index.html",
+        "el": { "items": ".advice table tbody tr", "title": "> :eq(0)", "price1": "> :eq(2)", "price2": "> :eq(3)" }
+    },
+    
+    subaru: {
+        "prefix": "http://www.subaru.com.tr/",
+        "uri": "Fiyat-Listesi",
+        "el": { "items": ".price-box table tbody tr:not('.modeltitletoptable')", "title": "> :eq(0)", "price1": "> :eq(1)" }
+    },
+
+    jeep: {
+        "prefix": "https://tofas.dpcmsys.com/",
+        "uri": "TofasPriceList/JEEP_FiyatListesi_2018.Html?opncl_performance=true&opncl_advertising=true",
+        "el": { "items": "table tbody tr", "title": "> :eq(0), > :eq(1), > :eq(2)", "price1": "> :eq(3)", "price2": "> :eq(4)" }
+    },
+
+    jaguar: {
+        "prefix": "http://www.jaguar-turkiye.com/",
+        "uri": "jaguar-range/fiyat-listesi/index.html",
+        "el": { "items": ".tableAreaFiyat tbody tr:not('.firstChild')", "title": "> :eq(0), > :eq(1), > :eq(2), > :eq(3)", "price1": ".fiyatColm span:eq(1)" }
+    },
+
+    landrover: {
+        "prefix": "http://www.landrover.com.tr/",
+        "uri": "fiyat-listesi.aspx",
+        "el": { "items": ".tableAreaFiyat tbody tr:not('.firstChild')", "title": "> :eq(0), > :eq(1), > :eq(2), > :eq(3)", "price1": ".fiyatColm span:eq(1)" }
+    },
+
+    bmw: {
+        "prefix": "https://www.borusanotomotiv.com/",
+        "uri": "bmw/stage2/fiyat-listesi/static-fiyat-listesi-v2.aspx?utm_source=${urlParameter.utm_source}&utm_medium=${urlParameter.utm_medium}&utm_campaign=${urlParameter.utm_campaign}&seri=${urlParameter.seri}",
+        "el": { "items": ".SeriesDetail .Series .DetailTable", "title": "> :eq(1) p, > :eq(2), > :eq(3), > :eq(4), > :eq(5), > :eq(6)", "price1": "> :eq(8)" }
+    },
+
+    ssangyong: {
+        "prefix": "http://www.ssangyong.com.tr/",
+        "uri": "tr/fiyat-listesi",
+        "el": { "items": ".teknik-table tbody tr", "title": "> :eq(0)", "price1": "> :eq(1)", "price2": "> :eq(2)" }
+    },
+
+    honda: {
+        "prefix": "https://honda.com.tr/",
+        "uri": "otomobil-fiyat-listesi",
+        "func": function( k ){
+            var htm = $('<div>' + k + '</div>').find('.tab-content tbody tr [rowspan]').remove().end().get(0).outerHTML;
+            return htm;
+        },
+        "el": { "items": ".tab-content tbody tr", "title": "> :eq(0), > :eq(1), > :eq(2), > :eq(3), > :eq(4)", "price1": "> :eq(5)" }
+    },
+
+    peugeot: {
+        "prefix": "http://kampanya.peugeot.com.tr/",
+        "uri": "fiyat-listesi/index2018.html",
+        "el": { "items": "#priceListTable tr:not('.first-line'):not(':eq(0)')", "title": "> :eq(0)", "price1": "> :eq(1)" }
+    },
+
+    skoda: {
+        "prefix": "http://www.skoda.com.tr/",
+        "uri": "fiyat-listesi/fiyat-listesi",
+        "func": function( k ){
+
+            var htm = $('<div>' + k + '</div>')
+                        .find('.mobile-sticky-table')
+                        .each(function(){
+                            var ths = $( this ), span = ths.find('[rowspan]');
+                                ths
+                                .find('tr')
+                                .each(function(){
+                                    var ths = $( this );
+                                    if( ths.find('[rowspan]').length == 0 )
+                                        ths.prepend( span.clone() );
+                                });
+                        })
+                        .end()
+                        .get(0)
+                        .outerHTML;
+            return htm;
+        },
+        "el": { "items": ".mobile-sticky-table tbody tr", "title": "> :eq(0), > :eq(1)", "price1": "> :eq(3)", "price2": "> :eq(2)"  }
     }
 };
 
